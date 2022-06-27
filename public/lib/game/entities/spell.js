@@ -34,7 +34,6 @@ ig.module(
 
             init: function (x, y, settings) {
                 this.anims.idle = new ig.Animation(this.animSheet, 0.1, [0, 2, 1, 4, 3]);
-                console.log(this);
                 this.parent(x, y, settings);
             },
 

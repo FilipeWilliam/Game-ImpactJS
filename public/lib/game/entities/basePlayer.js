@@ -54,6 +54,8 @@ ig.module(
         this.anims.attack2 = new ig.Animation(this.attack2AnimationSheet, 0.1, [0, 1, 2, 3, 4, 5, 6]);
         this.anims.receiveDamage = new ig.Animation(this.receiveDamageAnimationSheet, 0.1, [0, 1, 2]);
         this.anims.die = new ig.Animation(this.dieAnimationSheet, 0.1, [0, 1, 2, 3, 4, 5, 6]);
+
+        socket.emit('initializePlayer', 1);
       },
 
       update: function () {

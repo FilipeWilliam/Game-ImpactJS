@@ -5,7 +5,6 @@ ig.module(
 		'impact.game',
 		'impact.font',
 		'game.levels.florest',
-		'impact.debug.debug'
 	)
 	.defines(function () {
 

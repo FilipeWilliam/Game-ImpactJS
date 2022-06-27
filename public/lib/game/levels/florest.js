@@ -1,5 +1,5 @@
 ig.module( 'game.levels.florest' )
-.requires( 'impact.image','game.entities.spell','game.entities.meteor','game.entities.wizard' )
+.requires( 'impact.image','game.entities.spell','game.entities.meteor' )
 .defines(function(){
 LevelFlorest=/*JSON[*/{
 	"entities": [
@@ -12,11 +12,6 @@ LevelFlorest=/*JSON[*/{
 			"type": "EntityMeteor",
 			"x": 100,
 			"y": 182
-		},
-		{
-			"type": "EntityWizard",
-			"x": 328,
-			"y": 177
 		}
 	],
 	"layer": [
