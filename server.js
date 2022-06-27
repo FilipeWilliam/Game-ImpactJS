@@ -1,19 +1,3 @@
-// const express = require("express");
-// const { createServer } = require("http");
-// const { Server } = require("socket.io");
-
-// const app = express();
-// const httpServer = createServer(app);
-// const io = new Server(httpServer, { /* options */ });
-
-// io.on("connection", (socket) => {
-//   console.log('Jogador conectado')
-// });
-
-// httpServer.listen(3000, () => {
-//   console.log('Servidor rodando!')
-// });
-
 import express from 'express';
 import http from 'http';
 import {Server} from 'socket.io';
