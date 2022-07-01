@@ -7,6 +7,7 @@ ig.module(
     )
     .defines(function () {
         EntityMeteor = BasePlayer.extend({
+            socketId: null,
             type: ig.Entity.TYPE.B,
             checkAgainst: ig.Entity.TYPE.A,
             collides: ig.Entity.COLLIDES.ACTIVE,

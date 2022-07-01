@@ -16,13 +16,14 @@ app.use(express.static('public'));
 let playerList = [];
 
 io.on("connection", socket => {
-  io.sockets.emit('playerConnected', playerList, socket.id);
-});
+  console.log(`Conectado ${socket.id}`);
+  playerList.push({id: socket.id, alreadyLoaded: false});
+  io.sockets.emit('playerConnected', socket.id);
 
-io.on('initializePlayer', (socket) => {
-  playerList.push(socket.id);
-  io.sockets.emit('playerConnected', playerList, socket.id);
-})
+  socket.on('gameLoaded', () => {
+    io.sockets.emit('renderCurrentPlayer', playerList);
+  })
+});
 
 serverHttp.listen(4000, () => {
   console.log("Tá rodando");

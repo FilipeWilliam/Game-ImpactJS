@@ -5,12 +5,12 @@ ig.module(
 		'impact.game',
 		'impact.font',
 		'game.levels.florest',
+		'game.entities.spell',
+		'game.entities.meteor',
 	)
 	.defines(function () {
 
 		MyGame = ig.Game.extend({
-
-			// Load a font
 			font: new ig.Font('media/04b03.font.png'),
 			gravity: 300,
 			init: function () {
@@ -20,6 +20,7 @@ ig.module(
 				ig.input.bind(ig.KEY.Z, 'attack1');
 				ig.input.bind(ig.KEY.X, 'attack2');
 				this.loadLevel(LevelFlorest);
+				socket.emit('gameLoaded', currentSocketId);
 			},
 
 			update: function () {

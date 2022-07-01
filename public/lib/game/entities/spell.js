@@ -2,7 +2,8 @@ ig.module(
         'game.entities.spell'
     )
     .requires(
-        'impact.entity'
+        'impact.entity',
+        'impact.entity-pool'
     )
     .defines(function () {
         EntitySpell = ig.Entity.extend({
@@ -48,5 +49,6 @@ ig.module(
                     this.kill();
                 }
             }
-        })
-    })
+        });
+    ig.EntityPool.enableFor( EntitySpell );
+})
