@@ -12,6 +12,7 @@ ig.module(
       checkAgainst: this.checkAgainst,
       collides: this.collides,
       socketId: this.socketId,
+      enemySocketId: this.enemySocketId,
       idleAnimationSheet: this.idleAnimationSheet,
       runAnimationSheet: this.runAnimationSheet,
       jumpAnimationSheet: this.jumpAnimationSheet,
@@ -20,6 +21,7 @@ ig.module(
       attack2AnimationSheet: this.attack2AnimationSheet,
       receiveDamageAnimationSheet: this.receiveDamageAnimationSheet,
       dieAnimationSheet: this.dieAnimationSheet,
+      serverComunicationInterval: 0,
       isAttacking: false,
       isDie: false,
       isTakeDamage: false,
@@ -29,7 +31,6 @@ ig.module(
       flip: false,
       isInCooldownAttack: false,
       cooldownIsLoading: false,
-      currentPlayer: null,
       size: this.size,
       accelGround: this.accelGround,
       accelAir: this.accelAir,
@@ -37,6 +38,15 @@ ig.module(
       cooldownAttackTimeout: this.cooldownAttackTimeout,
       offset: this.offset,
       health: this.health,
+      animationType: {
+        IDLE: 0,
+        JUMP: 1,
+        FALL: 2,
+        LEFT: 3,
+        RIGHT: 4,
+        TAKE_DAMAGE:5,
+        DYING: 6
+      },
       maxVel: {
         x: 100,
         y: 300
@@ -58,11 +68,7 @@ ig.module(
         this.anims.die = new ig.Animation(this.dieAnimationSheet, 0.1, [0, 1, 2, 3, 4, 5, 6]);
       },
 
-      update: function () {
-        if(this.currentPlayer === null) {
-          this.currentPlayer = ig.game.entities.find(entity => entity.socketId === this.socketId);
-        }
-
+      update: function () {      
         if (this.pos.y > ig.system.heigth) {
           this.kill();
         }
@@ -71,6 +77,7 @@ ig.module(
 
         if(this.socketId === currentSocketId) {
           if (ig.input.state('left')) {
+            this.anim = 
             this.moveLeft(accel);
           } else if (ig.input.state('right')) {
             this.moveRight(accel);
@@ -109,7 +116,6 @@ ig.module(
           } else if (!this.cooldownIsLoading && this.standing && ig.input.state('attack1')) {
             this.isAttacking = true;
             this.currentAnim = this.anims.attack1.rewind();
-            let fireBall;
   
             if (!this.isInCooldownAttack) {
               this.handleAttack();
@@ -123,7 +129,6 @@ ig.module(
               }, 1000);
             }
   
-  
           } else if (!this.cooldownIsLoading && this.standing && !this.isAttacking && ig.input.state('attack2')) {
             this.currentAnim = this.anims.attack2.rewind();
           } else if (this.vel.y < 0 && !this.standing && !this.isAttacking) {
@@ -135,6 +140,25 @@ ig.module(
           } else if (!this.isAttacking) {
             this.currentAnim = this.anims.idle;
           }
+        } else {
+          this.currentAnim = this.anims.idle;
+          // switch(this.animation) {
+          //   case this.animationType.JUMP: 
+          //   this.currentAnim = this.anims.jump;
+          //   break;
+
+          //   case this.animationType.IDDLE:
+          //   this.currentAnim = this.anims.iddle;
+          //   break;
+
+          //   case this.animationType.FALL:
+          //   this.currentAnim = this.anims.fall;
+          //   break;
+
+          //   case this.animationType.FALL:
+          //   this.currentAnim = this.anims.fall;
+          //   break;
+          // }
         }
 
         this.parent();

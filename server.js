@@ -22,6 +22,15 @@ io.on("connection", socket => {
 
   socket.on('gameLoaded', () => {
     io.sockets.emit('renderCurrentPlayer', playerList);
+  });
+
+  socket.on('playerLoaded', (socketId) => {
+    playerList.find(player => player.id === socketId).alreadyLoaded = true;
+  })
+
+  socket.on('disconnect', () => {
+    playerList = playerList.filter(player => player.id !== socket.id);
+    io.sockets.emit('removePlayer', {playerId: socket.id, playerList});
   })
 });
 
