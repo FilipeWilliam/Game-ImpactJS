@@ -7,11 +7,17 @@ ig.module(
     )
     .defines(function () {
         EntitySpell = ig.Entity.extend({
+            spellId: null,
             type: this.type,
             checkAgainst: this.checkAgainst,
             collides: ig.Entity.COLLIDES.LITE,
+            serverComunicationInterval: 10,
             gravityFactor: 0,
             flip: true,
+            maxVel: {
+                x: 1000,
+                y: 0,
+            },
             size: {
                 x: 35,
                 y: 20
@@ -24,6 +30,7 @@ ig.module(
             animSheet: new ig.AnimationSheet('media/champions/wizard/fireball/fireball-sheet.png', 64, 32),
 
             handleMovementTrace: function (res) {
+                console.log(this.vel);
                 this.pos.x += this.vel.x * ig.system.tick;
                 this.pos.y += this.vel.y * ig.system.tick;
             },
@@ -41,6 +48,12 @@ ig.module(
             update: function () {
                 this.removeIfOutOfScreen();
                 this.currentAnim = this.anims.idle;
+                if(this.serverComunicationInterval < 1 && !!this.pos.x) {
+                    this.serverComunicationInterval = 5;
+                    socket.emit('recieveDataSpell', this.pos.x, this.spellId);
+                }
+        
+                this.serverComunicationInterval -= 1;
                 this.parent();
             },
 

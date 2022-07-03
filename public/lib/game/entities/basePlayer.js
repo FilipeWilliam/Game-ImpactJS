@@ -196,11 +196,7 @@ ig.module(
         let currentFlip = this.currentAnim.flip.x;
 
         setTimeout(() => {
-          fireBall = ig.game.spawnEntity('EntitySpell', attackProperties.positionX, this.pos.y + 20, attackSettings);
-          fireBall.vel.x = attackProperties.attackVel;
-          if(fireBall.currentAnim) {
-            fireBall.currentAnim.flip.x = currentFlip;
-          }
+          socket.emit('createAttack',  attackProperties, this.pos.y + 20, currentFlip, attackSettings);
 
           setTimeout(() => {
             this.isAttacking = false;

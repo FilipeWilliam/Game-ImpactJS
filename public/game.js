@@ -12,9 +12,8 @@ socket.on('renderCurrentPlayer', (playerList) => {
   allPlayers = playerList;
   let isCurrentPlayerAlreadyLoaded = allPlayers.find(player => player.id === currentSocketId).alreadyLoaded;
 
-  console.log(isAllEntitiesRendered());
   if(!isCurrentPlayerAlreadyLoaded) {
-    ig.game.spawnEntity('EntityMeteor', 100, 170, {socketId: currentSocketId});
+    ig.game.spawnEntity('EntityWizard', 100, 170, {socketId: currentSocketId});
     socket.emit('playerLoaded', currentSocketId);
 
     if(!isAllEntitiesRendered()) {
@@ -38,13 +37,28 @@ socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, currentS
     enemy.enemyAnimation = currentAnimation;
     enemy.enemyFlip = flipX;
   }
+});
+
+socket.on('renderSpell', (attackProperties, positionY, flipX, attackSettings, spellId) => {
+  ig.game.spawnEntity('EntitySpell', attackProperties.positionX, positionY, {spellId, ...attackSettings});
+
+  let spell = ig.game.entities.find(spell => spell.spellId === spellId);
+  spell.vel.x = attackProperties.attackVel;
+  if(spell.currentAnim) {
+    spell.currentAnim.flip.x = flipX;
+  }
 })
+
+socket.on('spellMove', (positionX, spellId) => {
+  let spell = ig.game.entities.find(spell => spell.spellId === spellId);
+  spell.pos.x = positionX;
+});
 
 let isAllEntitiesRendered = () => allPlayers.length === ig.game.entities.length;
 
 function addOtherPlayer() {
   otherPlayer = allPlayers.filter(player => player.id !== currentSocketId)[0];
-  ig.game.spawnEntity('EntityMeteor', 100, 170, {socketId: otherPlayer.id});
+  ig.game.spawnEntity('EntityWizard', 100, 170, {socketId: otherPlayer.id});
 }
 
 function removePlayer(response) {

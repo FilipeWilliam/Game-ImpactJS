@@ -14,6 +14,7 @@ const io = new Server(serverHttp, {
 app.use(express.static('public'));
 
 let playerList = [];
+let indexOfSpell = 1;
 
 io.on("connection", socket => {
   console.log(`Conectado ${socket.id}`);
@@ -30,6 +31,16 @@ io.on("connection", socket => {
 
   socket.on('recieveData', (positionX, positionY, currentAnimation, flipX, currentSocketId) => {
     io.sockets.emit('playerMove', positionX, positionY, currentAnimation, flipX, currentSocketId);
+  })
+
+  
+  socket.on('createAttack', (attackProperties, positionY, flipX, attackSettings) => {
+    io.sockets.emit('renderSpell', attackProperties, positionY, flipX, attackSettings, indexOfSpell);
+    indexOfSpell++;
+  })
+
+  socket.on('recieveDataSpell', (positionX, spellId) => {
+    io.sockets.emit('spellMove', positionX, spellId);
   })
 
   socket.on('disconnect', () => {

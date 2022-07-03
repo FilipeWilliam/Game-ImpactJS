@@ -7,6 +7,7 @@ ig.module(
 		'game.levels.florest',
 		'game.entities.spell',
 		'game.entities.meteor',
+		'game.entities.wizard',
 	)
 	.defines(function () {
 
