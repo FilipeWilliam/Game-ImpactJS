@@ -1,5 +1,5 @@
 const socket = io('http://localhost:4000');
-let currentSocketId;
+let currentSocketId, otherPlayer;
 let allPlayers = [];
 
 socket.on('playerConnected', (socketId) => {
@@ -30,17 +30,24 @@ socket.on('removePlayer', (response) => {
   removePlayer(response);
 });
 
+socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, currentSocketId) => {
+  if(otherPlayer) {
+    let enemy = ig.game.entities.find(player => player.socketId === currentSocketId);
+    enemy.pos.x = positionX;
+    enemy.pos.y = positionY;
+    enemy.enemyAnimation = currentAnimation;
+    enemy.enemyFlip = flipX;
+  }
+})
+
 let isAllEntitiesRendered = () => allPlayers.length === ig.game.entities.length;
 
 function addOtherPlayer() {
-  let otherPlayer = allPlayers.filter(player => player.id !== currentSocketId);
-  ig.game.spawnEntity('EntityMeteor', 100, 170, {socketId: otherPlayer[0].id});
+  otherPlayer = allPlayers.filter(player => player.id !== currentSocketId)[0];
+  ig.game.spawnEntity('EntityMeteor', 100, 170, {socketId: otherPlayer.id});
 }
 
 function removePlayer(response) {
-  console.log(allPlayers)
-  console.log(response);
-  console.log(ig.game.entities);
   ig.game.entities.find(player => player.socketId === response.playerId).kill();
-  // allPlayers = response.playerList;
+  allPlayers = response.playerList;
 }

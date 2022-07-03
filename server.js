@@ -28,6 +28,10 @@ io.on("connection", socket => {
     playerList.find(player => player.id === socketId).alreadyLoaded = true;
   })
 
+  socket.on('recieveData', (positionX, positionY, currentAnimation, flipX, currentSocketId) => {
+    io.sockets.emit('playerMove', positionX, positionY, currentAnimation, flipX, currentSocketId);
+  })
+
   socket.on('disconnect', () => {
     playerList = playerList.filter(player => player.id !== socket.id);
     io.sockets.emit('removePlayer', {playerId: socket.id, playerList});

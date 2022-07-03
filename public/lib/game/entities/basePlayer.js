@@ -21,7 +21,10 @@ ig.module(
       attack2AnimationSheet: this.attack2AnimationSheet,
       receiveDamageAnimationSheet: this.receiveDamageAnimationSheet,
       dieAnimationSheet: this.dieAnimationSheet,
-      serverComunicationInterval: 0,
+      serverComunicationInterval: 10,
+      enemyAnimation: 0,
+      enemyFlip: 0,
+      myAnimation: 0,
       isAttacking: false,
       isDie: false,
       isTakeDamage: false,
@@ -42,10 +45,10 @@ ig.module(
         IDLE: 0,
         JUMP: 1,
         FALL: 2,
-        LEFT: 3,
-        RIGHT: 4,
+        RUN: 3,
+        ATTACKING: 4,
         TAKE_DAMAGE:5,
-        DYING: 6
+        DYING: 6,
       },
       maxVel: {
         x: 100,
@@ -77,7 +80,6 @@ ig.module(
 
         if(this.socketId === currentSocketId) {
           if (ig.input.state('left')) {
-            this.anim = 
             this.moveLeft(accel);
           } else if (ig.input.state('right')) {
             this.moveRight(accel);
@@ -95,6 +97,7 @@ ig.module(
   
           if (this.isDying) {
             if (!this.isInDiyngAnimation) {
+              this.myAnimation = this.animationType.DYING;
               this.currentAnim = this.anims.die.rewind();
               this.isInDiyngAnimation = true;
             } else if (this.currentAnim.loopCount > 0) {
@@ -106,6 +109,7 @@ ig.module(
           } else if (this.isTakeDamage) {
             if (!this.isInTakeDamageAnimation) {
               this.currentAnim = this.anims.receiveDamage.rewind();
+              this.myAnimation = this.animationType.TAKE_DAMAGE;
               this.isInTakeDamageAnimation = true;
               this.receiveDamage(1);
             } else if (this.currentAnim.loopCount > 0) {
@@ -115,8 +119,10 @@ ig.module(
   
           } else if (!this.cooldownIsLoading && this.standing && ig.input.state('attack1')) {
             this.isAttacking = true;
+            this.myAnimation = this.animationType.ATTACKING;
             this.currentAnim = this.anims.attack1.rewind();
-  
+            this.currentAnim.flip.x = this.flip;
+
             if (!this.isInCooldownAttack) {
               this.handleAttack();
               this.isInCooldownAttack = true;
@@ -132,47 +138,71 @@ ig.module(
           } else if (!this.cooldownIsLoading && this.standing && !this.isAttacking && ig.input.state('attack2')) {
             this.currentAnim = this.anims.attack2.rewind();
           } else if (this.vel.y < 0 && !this.standing && !this.isAttacking) {
+            this.myAnimation = this.animationType.JUMP;
             this.currentAnim = this.anims.jump;
           } else if (this.vel.y > 0 && !this.standing && !this.isAttacking) {
+            this.myAnimation = this.animationType.FALL;
             this.currentAnim = this.anims.fall;
           } else if (this.vel.x != 0 && !this.isAttacking) {
+            this.myAnimation = this.animationType.RUN;
             this.currentAnim = this.anims.run;
           } else if (!this.isAttacking) {
+            this.myAnimation = this.animationType.IDLE;
             this.currentAnim = this.anims.idle;
           }
+          
+          if(this.serverComunicationInterval < 1) {
+            this.serverComunicationInterval = 5;
+            socket.emit('recieveData', this.pos.x, this.pos.y, this.myAnimation, this.flip, this.socketId);
+          }
+
+          this.serverComunicationInterval -= 1;
+          this.parent();
         } else {
-          this.currentAnim = this.anims.idle;
-          // switch(this.animation) {
-          //   case this.animationType.JUMP: 
-          //   this.currentAnim = this.anims.jump;
-          //   break;
+          switch(this.enemyAnimation) {
+            case this.animationType.JUMP: 
+              this.currentAnim = this.anims.jump;
+              this.currentAnim.flip.x =  this.enemyFlip;
+              break;
 
-          //   case this.animationType.IDDLE:
-          //   this.currentAnim = this.anims.iddle;
-          //   break;
+            case this.animationType.RUN: 
+              this.currentAnim = this.anims.run;
+              this.currentAnim.flip.x =  this.enemyFlip;
+              break;
 
-          //   case this.animationType.FALL:
-          //   this.currentAnim = this.anims.fall;
-          //   break;
+            case this.animationType.IDLE:
+              this.currentAnim = this.anims.idle;
+              this.currentAnim.flip.x =  this.enemyFlip;
+              break;
 
-          //   case this.animationType.FALL:
-          //   this.currentAnim = this.anims.fall;
-          //   break;
-          // }
+            case this.animationType.ATTACKING:
+              this.currentAnim = this.anims.attack1;
+              this.currentAnim.flip.x =  this.enemyFlip;
+              break;
+
+            case this.animationType.FALL:
+              this.currentAnim = this.anims.fall;
+              this.currentAnim.flip.x =  this.enemyFlip;
+              break;
+          }
+
+          this.parent();
         }
-
-        this.parent();
       },
 
       handleAttack: function () {
         let attackProperties = this.createAttackProperties();
         let attackSettings = this.inheritSettings();
+        let currentFlip = this.currentAnim.flip.x;
 
         setTimeout(() => {
           fireBall = ig.game.spawnEntity('EntitySpell', attackProperties.positionX, this.pos.y + 20, attackSettings);
           fireBall.vel.x = attackProperties.attackVel;
+          if(fireBall.currentAnim) {
+            fireBall.currentAnim.flip.x = currentFlip;
+          }
+
           setTimeout(() => {
-            fireBall.currentAnim.flip.x = this.flip;
             this.isAttacking = false;
           }, 10)
         }, 600);
