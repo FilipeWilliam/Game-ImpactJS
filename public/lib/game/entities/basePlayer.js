@@ -160,6 +160,16 @@ ig.module(
           this.parent();
         } else {
           switch(this.enemyAnimation) {
+            case this.animationType.DYING: 
+              this.currentAnim =  this.anims.die.rewind();
+              this.currentAnim.flip.x =  this.enemyFlip;
+              break;
+
+            case this.animationType.TAKE_DAMAGE: 
+              this.currentAnim = this.anims.receiveDamage.rewind();
+              this.currentAnim.flip.x =  this.enemyFlip;
+              break;
+
             case this.animationType.JUMP: 
               this.currentAnim = this.anims.jump;
               this.currentAnim.flip.x =  this.enemyFlip;

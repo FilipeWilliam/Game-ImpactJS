@@ -30,12 +30,11 @@ ig.module(
             animSheet: new ig.AnimationSheet('media/champions/wizard/fireball/fireball-sheet.png', 64, 32),
 
             handleMovementTrace: function (res) {
-                console.log(this.vel);
                 this.pos.x += this.vel.x * ig.system.tick;
                 this.pos.y += this.vel.y * ig.system.tick;
             },
 
-            check: function (other) {
+            collideWith: function (other) {
                 this.kill();
                 other.handleDamageReceive();
             },

@@ -13,7 +13,7 @@ socket.on('renderCurrentPlayer', (playerList) => {
   let isCurrentPlayerAlreadyLoaded = allPlayers.find(player => player.id === currentSocketId).alreadyLoaded;
 
   if(!isCurrentPlayerAlreadyLoaded) {
-    ig.game.spawnEntity('EntityWizard', 100, 170, {socketId: currentSocketId});
+    ig.game.spawnEntity('EntityMeteor', 100, 170, {socketId: currentSocketId, });
     socket.emit('playerLoaded', currentSocketId);
 
     if(!isAllEntitiesRendered()) {
@@ -58,7 +58,7 @@ let isAllEntitiesRendered = () => allPlayers.length === ig.game.entities.length;
 
 function addOtherPlayer() {
   otherPlayer = allPlayers.filter(player => player.id !== currentSocketId)[0];
-  ig.game.spawnEntity('EntityWizard', 100, 170, {socketId: otherPlayer.id});
+  ig.game.spawnEntity('EntityMeteor', 100, 170, {socketId: otherPlayer.id});
 }
 
 function removePlayer(response) {
