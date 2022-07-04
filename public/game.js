@@ -1,7 +1,7 @@
 const socket = io('http://localhost:4000');
 let currentSocketId, otherPlayer;
 let allPlayers = [];
-let currentChar = 'EntitySamurai';
+let currentChar = 'EntityMedieval';
 
 socket.on('playerConnected', (socketId) => {
   if(!currentSocketId) {
