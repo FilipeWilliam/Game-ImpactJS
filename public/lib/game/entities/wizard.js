@@ -12,7 +12,7 @@ ig.module(
             collides: ig.Entity.COLLIDES.ACTIVE,
             accelGround: 200,
             accelAir: 310,
-            jump: 200,
+            jump: 250,
             health: 5,
             cooldownAttackTimeout: 1000,
             offset: {

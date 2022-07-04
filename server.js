@@ -16,13 +16,13 @@ app.use(express.static('public'));
 let playerList = [];
 let indexOfSpell = 1;
 
-io.on("connection", socket => {
+io.on("connection", (socket) => {
   console.log(`Conectado ${socket.id}`);
   playerList.push({id: socket.id, alreadyLoaded: false});
   io.sockets.emit('playerConnected', socket.id);
 
-  socket.on('gameLoaded', () => {
-    io.sockets.emit('renderCurrentPlayer', playerList);
+  socket.on('gameLoaded', (currentSocketId, charSelected) => {
+    io.sockets.emit('renderCurrentPlayer', playerList, charSelected);
   });
 
   socket.on('playerLoaded', (socketId) => {

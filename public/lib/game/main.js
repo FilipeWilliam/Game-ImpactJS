@@ -8,6 +8,8 @@ ig.module(
 		'game.entities.spell',
 		'game.entities.meteor',
 		'game.entities.wizard',
+		'game.entities.samurai',
+		'impact.debug.debug'
 	)
 	.defines(function () {
 
@@ -21,7 +23,7 @@ ig.module(
 				ig.input.bind(ig.KEY.Z, 'attack1');
 				ig.input.bind(ig.KEY.X, 'attack2');
 				this.loadLevel(LevelFlorest);
-				socket.emit('gameLoaded', currentSocketId);
+				socket.emit('gameLoaded', currentSocketId, currentChar);
 			},
 
 			update: function () {
