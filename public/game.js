@@ -1,7 +1,7 @@
 const socket = io('http://localhost:4000');
 let currentSocketId, otherPlayer;
 let allPlayers = [];
-let currentChar = 'EntityMedieval';
+let currentChar = 'EntitySamurai';
 
 socket.on('playerConnected', (socketId) => {
   if(!currentSocketId) {
@@ -59,7 +59,7 @@ let isAllEntitiesRendered = () => allPlayers.length === ig.game.entities.length;
 
 function addOtherPlayer() {
   otherPlayer = allPlayers.filter(player => player.id !== currentSocketId)[0];
-  ig.game.spawnEntity('EntitySamurai', 100, 170, {socketId: otherPlayer.id});
+  ig.game.spawnEntity(otherPlayer.currentChar , 100, 170, {socketId: otherPlayer.id});
 }
 
 function removePlayer(response) {

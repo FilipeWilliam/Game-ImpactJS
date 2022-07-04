@@ -61,7 +61,6 @@ ig.module(
 
       init: function (x, y, settings) {
         this.parent(x, y, settings);
-        console.log(this.idleAnimationSheet);
         this.anims.idle = new ig.Animation(this.idleAnimationSheet, 0.1, [0, 1, 2, 3, 4, 5, 6, 7]);
         this.anims.run = new ig.Animation(this.runAnimationSheet, 0.1, [0, 1, 2, 3, 4, 5, 6, 7]);
         this.anims.jump = new ig.Animation(this.jumpAnimationSheet, 0.1, [0, 1]);

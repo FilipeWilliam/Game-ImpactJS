@@ -22,6 +22,7 @@ io.on("connection", (socket) => {
   io.sockets.emit('playerConnected', socket.id);
 
   socket.on('gameLoaded', (currentSocketId, charSelected) => {
+    playerList.find(player => player.id === currentSocketId).currentChar = charSelected;
     io.sockets.emit('renderCurrentPlayer', playerList, charSelected);
   });
 
