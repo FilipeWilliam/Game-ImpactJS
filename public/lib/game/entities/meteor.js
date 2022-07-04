@@ -14,7 +14,7 @@ ig.module(
             accelGround: 200,
             accelAir: 310,
             jump: 250,
-            health: 8,
+            health: 2,
             cooldownAttackTimeout: 1000,
             offset: {
                 x: 70,

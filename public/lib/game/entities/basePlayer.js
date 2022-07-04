@@ -97,8 +97,8 @@ ig.module(
   
           if (this.isDying) {
             if (!this.isInDiyngAnimation) {
-              this.myAnimation = this.animationType.DYING;
               this.currentAnim = this.anims.die.rewind();
+              this.myAnimation = this.animationType.DYING;
               this.isInDiyngAnimation = true;
             } else if (this.currentAnim.loopCount > 0) {
               this.kill();
@@ -160,9 +160,14 @@ ig.module(
           this.parent();
         } else {
           switch(this.enemyAnimation) {
-            case this.animationType.DYING: 
-              this.currentAnim =  this.anims.die.rewind();
-              this.currentAnim.flip.x =  this.enemyFlip;
+            case this.animationType.DYING:
+              if (!this.isInDiyngAnimation) {
+                this.currentAnim = this.anims.die.rewind();
+                this.isInDiyngAnimation = true;
+              } else if (this.currentAnim.loopCount > 0) {
+                this.kill();
+                this.isInDiyngAnimation = false;
+              }
               break;
 
             case this.animationType.TAKE_DAMAGE: 
