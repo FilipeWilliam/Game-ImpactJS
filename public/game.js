@@ -40,6 +40,14 @@ socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, currentS
   }
 });
 
+socket.on('respawnPlayer', (socketId) => {
+  let playerIsInGame = ig.game.entities.find(player => player.socketId === socketId);
+
+  if(!playerIsInGame && socketId === currentSocketId) {
+    ig.game.spawnEntity(currentChar, 100, 170, {socketId: currentSocketId });
+  }
+})
+
 socket.on('renderSpell', (attackProperties, positionY, flipX, attackSettings, spellId) => {
   ig.game.spawnEntity('EntitySpell', attackProperties.positionX, positionY, {spellId, ...attackSettings});
 
@@ -48,7 +56,7 @@ socket.on('renderSpell', (attackProperties, positionY, flipX, attackSettings, sp
   if(spell.currentAnim) {
     spell.currentAnim.flip.x = flipX;
   }
-})
+});
 
 socket.on('spellMove', (positionX, spellId) => {
   let spell = ig.game.entities.find(spell => spell.spellId === spellId);

@@ -32,9 +32,14 @@ io.on("connection", (socket) => {
 
   socket.on('recieveData', (positionX, positionY, currentAnimation, flipX, currentSocketId) => {
     io.sockets.emit('playerMove', positionX, positionY, currentAnimation, flipX, currentSocketId);
-  })
+  });
 
-  
+  socket.on('die', (currentSocketId) => {
+    setTimeout(() => {
+      io.sockets.emit('respawnPlayer', currentSocketId);
+    }, 3000);
+  });
+
   socket.on('createAttack', (attackProperties, positionY, flipX, attackSettings) => {
     io.sockets.emit('renderSpell', attackProperties, positionY, flipX, attackSettings, indexOfSpell);
     indexOfSpell++;
@@ -42,12 +47,12 @@ io.on("connection", (socket) => {
 
   socket.on('recieveDataSpell', (positionX, spellId) => {
     io.sockets.emit('spellMove', positionX, spellId);
-  })
+  });
 
   socket.on('disconnect', () => {
     playerList = playerList.filter(player => player.id !== socket.id);
     io.sockets.emit('removePlayer', {playerId: socket.id, playerList});
-  })
+  });
 });
 
 serverHttp.listen(4000, () => {

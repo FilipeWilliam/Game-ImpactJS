@@ -71,8 +71,9 @@ ig.module(
         this.anims.die = new ig.Animation(this.dieAnimationSheet, 0.1, [0, 1, 2, 3, 4, 5, 6]);
       },
 
-      update: function () {      
-        if (this.pos.y > ig.system.heigth) {
+      update: function () {     
+        if (this.pos.y > ig.system.height) {
+          this.handleDie();
           this.kill();
         }
 
@@ -101,6 +102,7 @@ ig.module(
               this.myAnimation = this.animationType.DYING;
               this.isInDiyngAnimation = true;
             } else if (this.currentAnim.loopCount > 0) {
+              this.handleDie();
               this.kill();
               this.isDying = false;
               this.isInDiyngAnimation = false;
@@ -165,6 +167,7 @@ ig.module(
                 this.currentAnim = this.anims.die.rewind();
                 this.isInDiyngAnimation = true;
               } else if (this.currentAnim.loopCount > 0) {
+                this.handleDie();
                 this.kill();
                 this.isInDiyngAnimation = false;
               }
@@ -260,6 +263,10 @@ ig.module(
         } else {
           this.isDying = true;
         }
+      },
+
+      handleDie: function () {
+        socket.emit('die', this.socketId);
       }
     });
   });
