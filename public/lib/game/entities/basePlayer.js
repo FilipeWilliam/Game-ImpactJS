@@ -155,7 +155,7 @@ ig.module(
           
           if(this.serverComunicationInterval < 1) {
             this.serverComunicationInterval = 3;
-            socket.emit('recieveData', this.pos.x, this.pos.y, this.myAnimation, this.flip, this.socketId);
+            socket.emit('recieveData', this.pos.x, this.pos.y, this.myAnimation, this.flip, this.health, this.socketId);
           }
 
           this.serverComunicationInterval -= 1;

@@ -30,8 +30,8 @@ io.on("connection", (socket) => {
     playerList.find(player => player.id === socketId).alreadyLoaded = true;
   })
 
-  socket.on('recieveData', (positionX, positionY, currentAnimation, flipX, currentSocketId) => {
-    io.sockets.emit('playerMove', positionX, positionY, currentAnimation, flipX, currentSocketId);
+  socket.on('recieveData', (positionX, positionY, currentAnimation, flipX, health, currentSocketId) => {
+    io.sockets.emit('playerMove', positionX, positionY, currentAnimation, flipX, health, currentSocketId);
   });
 
   socket.on('die', (currentSocketId) => {

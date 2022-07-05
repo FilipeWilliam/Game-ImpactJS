@@ -5,16 +5,16 @@ ig.module(
 		'impact.game',
 		'impact.font',
 		'game.levels.florest',
+		'game.levels.industrial',
 		'game.entities.spell',
 		'game.entities.meteor',
 		'game.entities.wizard',
 		'game.entities.samurai',
-		'impact.debug.debug'
 	)
 	.defines(function () {
 
 		MyGame = ig.Game.extend({
-			font: new ig.Font('media/04b03.font.png'),
+			font: new ig.Font('media/font.png'),
 			gravity: 300,
 			init: function () {
 				ig.input.bind(ig.KEY.LEFT_ARROW, 'left');
@@ -32,6 +32,16 @@ ig.module(
 
 			draw: function () {
 				this.parent();
+				let currentPlayer = ig.game.entities.find(player => player.socketId === currentSocketId);
+				let enemyPlayer = ig.game.entities.find(player => player.socketId !== currentSocketId);
+
+				if(currentPlayer) {
+					this.font.draw('Samurai: ' + currentPlayer.health, 50, 10, ig.Font.ALIGN.CENTER);
+				}
+
+				if(enemyPlayer) {
+					this.font.draw('Samurai: ' + enemyPlayer.health, 550, 10, ig.Font.ALIGN.CENTER);
+				}
 			}
 		});
 

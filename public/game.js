@@ -30,12 +30,13 @@ socket.on('removePlayer', (response) => {
   removePlayer(response);
 });
 
-socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, currentSocketId) => {
+socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, health, currentSocketId) => {
   if(otherPlayer) {
     let enemy = ig.game.entities.find(player => player.socketId === currentSocketId);
     enemy.pos.x = positionX;
     enemy.pos.y = positionY;
     enemy.enemyAnimation = currentAnimation;
+    enemy.health = health;
     enemy.enemyFlip = flipX;
   }
 });
