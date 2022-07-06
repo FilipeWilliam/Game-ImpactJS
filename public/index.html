@@ -36,33 +36,74 @@
 
 				<v-container ref="charSelection">
 					<v-card style="background-color: #333;">
-						<v-card-title style="color: #FFF;">Escolha seu personagem: {{currentChar}}</v-card-title>
-						<v-container>
-							<v-row>
-								<v-col v-for="(character, index) in characters" :key="index" cols="6">
-									<v-card>
-										<v-card-text class="text-center d-flex flex-column">
-											<span style="color: #000; font-size: 20px;">{{character.name}}</span>
 
-											<div class="py-2">
-												<v-card-text class="py-0">Vida: {{character.health}}</v-card-text>
-												<v-card-text class="py-0">Força: {{character.power}}</v-card-text>
-												<v-card-text class="py-0">Velocidade: {{character.speed}}</v-card-text>
-											</div>
+						<template v-if="isStageSelect">
+							<v-card-title style="color: #FFF;">Escolha o cenário: {{currentStage.name}}</v-card-title>
+							<v-container>
+								<v-row>
+									<v-col v-for="(stage, index) in stages" :key="index" cols="6">
+										<v-card>
+											<v-card-text class="text-center d-flex flex-column">
+												<span class="py-2" style="color: #000; font-size: 20px;">{{stage.name}}</span>
 
-											<v-btn small rounded color="green" @click="chooseChar(character)">Selecionar</v-btn>
-										</v-card-text>
-									</v-card>
-								</v-col>
-							</v-row>
-						</v-container>
+												<v-btn class="mt-2" small rounded color="green" @click="chooseStage(stage)">Selecionar</v-btn>
+											</v-card-text>
+										</v-card>
+									</v-col>
+								</v-row>
+							</v-container>
 
-						<v-card-actions class="d-flex justify-center">
-							<v-btn large :loading="loading" @click="showCanva">Jogar</v-btn>
-						</v-card-actions>
+							<v-card-actions class="d-flex justify-center">
+								<v-btn large :loading="loading" :disabled="!currentStage.name" @click="confirmStage">Confirmar</v-btn>
+							</v-card-actions>
+						</template>
+
+						<template v-if="isCharSelect">
+							<v-card-title style="color: #FFF;">Escolha seu personagem: {{currentChar}}</v-card-title>
+							<v-container>
+								<v-row>
+									<v-col v-for="(character, index) in characters" :key="index" cols="6">
+										<v-card>
+											<v-card-text class="text-center d-flex flex-column">
+												<span style="color: #000; font-size: 20px;">{{character.name}}</span>
+
+												<div class="py-2">
+													<v-card-text class="py-0">Vida: {{character.health}}</v-card-text>
+													<v-card-text class="py-0">Força: {{character.power}}</v-card-text>
+													<v-card-text class="py-0">Velocidade: {{character.speed}}</v-card-text>
+												</div>
+
+												<v-btn small rounded color="green" @click="chooseChar(character)">Selecionar</v-btn>
+											</v-card-text>
+										</v-card>
+									</v-col>
+								</v-row>
+							</v-container>
+
+							<v-card-actions class="d-flex justify-center">
+								<v-btn large :disabled="!currentChar" @click="showCanvas">Jogar</v-btn>
+							</v-card-actions>
+					</template>
+
 					</v-card>
 				</v-container>
 
+				<v-dialog v-model="dialog" width="600">
+					<v-card>
+
+						<template v-if="isWinner">
+							<v-card-title>Você ganhou!</v-card-title>
+							<v-card-text>Você perdeu de {{matchPoints.myPoints}} x {{matchPoints.enemyPoints}}</v-card-text>
+						</template>
+
+						<template v-else>
+							<v-card-title>Você perdeu!</v-card-title>
+							<v-card-text>Você ganhou de {{matchPoints.myPoints}} x {{matchPoints.enemyPoints}}</v-card-text>
+						</template>
+
+						<v-btn @click="dialog = false">Continuar</v-btn>
+					</v-card>
+				</v-dialog>
       </v-main>
     </v-app>
 	</div>
@@ -79,8 +120,27 @@
 			data() {
 				return {
 					loading: true,
+					dialog: false,
 					interval: null,
 					currentChar: null,
+					currentStage: {},
+					isCharSelect: false,
+					isStageSelect: true,
+					isWinner: false,
+					matchPoints: {
+						myPoints: 0,
+						enemyPoints: 0
+					},
+					stages: [
+						{
+							name: 'Industrial',
+							level: 'LevelIndustrial'
+						},
+						{
+							name: 'Floresta',
+							level: 'LevelFlorest'
+						}
+					],
 					characters: [
 						{
 							name: 'Warrior',
@@ -107,7 +167,7 @@
 				}
 			},
 			methods: {
-				showCanva() {
+				showCanvas() {
 					socket.emit('gameLoaded', currentSocketId, currentChar);
 					app.$refs.canvas.classList.remove('d-none');
 					app.$refs.charSelection.classList.add('d-none');
@@ -115,6 +175,33 @@
 				chooseChar(char) {
 					this.currentChar = char.name
 					currentChar = char.entity;
+				},
+				chooseStage(stage) {
+					this.currentStage = stage;
+				},
+				confirmStage() {
+					ig.game.loadLevel(eval(this.currentStage.level));
+					this.isStageSelect = false;
+					this.isCharSelect = true;
+				},
+				finishMatch(myPoints, enemyPoints) {
+					if(myPoints > enemyPoints) {
+						this.isWinner = true
+					} else {
+						this.isWinner = false
+					}
+
+					this.matchPoints = {
+						myPoints,
+						enemyPoints
+					}
+
+					this.closeCanvas();
+					this.dialog = true;
+				},
+				closeCanvas() {
+					app.$refs.canvas.classList.add('d-none');
+					app.$refs.charSelection.classList.remove('d-none');
 				},
 				watchGameLoading() {
 					this.interval = setInterval(() => {

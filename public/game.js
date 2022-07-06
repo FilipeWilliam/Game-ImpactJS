@@ -67,7 +67,7 @@ socket.on('atualizeTimer', (timer) => {
   currentMatchSecond = timer.second;
   if(currentMatchMinute === 0 && currentMatchSecond === 0) {
     isMatchFinished = true;
-    window.location.href = 'https://www.youtube.com/';
+    console.log(app.finishMatch(currentPoint, enemyPoint));
   }
 });
 
