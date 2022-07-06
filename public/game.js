@@ -1,7 +1,12 @@
 const socket = io('http://localhost:4000');
 let currentSocketId, otherPlayer;
 let allPlayers = [];
-let currentChar = 'EntitySamurai';
+let currentChar = '';
+let currentMatchMinute = 4;
+let currentMatchSecond = 0;
+let isMatchFinished = false;
+let currentPoint = 0;
+let enemyPoint = 0;
 
 socket.on('playerConnected', (socketId) => {
   if(!currentSocketId) {
@@ -24,13 +29,15 @@ socket.on('renderCurrentPlayer', (playerList, charSelected) => {
   } else if (!isAllEntitiesRendered()) {
     addOtherPlayer();
   }
+
+  setPlayersPoints();
 });
 
 socket.on('removePlayer', (response) => {
   removePlayer(response);
 });
 
-socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, health, currentSocketId) => {
+socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, health, currentSocketId, points) => {
   if(otherPlayer) {
     let enemy = ig.game.entities.find(player => player.socketId === currentSocketId);
     enemy.pos.x = positionX;
@@ -41,13 +48,28 @@ socket.on('playerMove', (positionX, positionY, currentAnimation, flipX, health, 
   }
 });
 
-socket.on('respawnPlayer', (socketId) => {
+socket.on('respawnPlayer', (socketId, playerList) => {
   let playerIsInGame = ig.game.entities.find(player => player.socketId === socketId);
+  let charToRevive = playerList.find(player => player.id === socketId).currentChar;
 
-  if(!playerIsInGame && socketId === currentSocketId) {
-    ig.game.spawnEntity(currentChar, 100, 170, {socketId: currentSocketId });
+  if(!playerIsInGame) {
+    ig.game.spawnEntity(charToRevive, 100, 170, { socketId });
   }
-})
+});
+
+socket.on('changePoints', (playerList) => {
+  allPlayers = playerList;
+  setPlayersPoints();
+});
+
+socket.on('atualizeTimer', (timer) => {
+  currentMatchMinute = timer.minute;
+  currentMatchSecond = timer.second;
+  if(currentMatchMinute === 0 && currentMatchSecond === 0) {
+    isMatchFinished = true;
+    window.location.href = 'https://www.youtube.com/';
+  }
+});
 
 socket.on('renderSpell', (attackProperties, positionY, flipX, attackSettings, spellId) => {
   ig.game.spawnEntity('EntitySpell', attackProperties.positionX, positionY, {spellId, ...attackSettings});
@@ -74,4 +96,12 @@ function addOtherPlayer() {
 function removePlayer(response) {
   ig.game.entities.find(player => player.socketId === response.playerId).kill();
   allPlayers = response.playerList;
+}
+
+function setPlayersPoints() {
+  let currentPlayer = allPlayers.find(player => player.id === currentSocketId);
+  let enemyPlayer = allPlayers.find(player => player.id !== currentSocketId)
+
+  currentPoint = currentPlayer.points;
+  enemyPoint = enemyPlayer.points;
 }

@@ -22,13 +22,113 @@
 		}
 	</style>
 
+	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
 	<script type="text/javascript" src="/lib/impact/impact.js"></script>
 	<script type="text/javascript" src="/lib/game/main.js"></script>
 </head>
 <body>
-	<canvas id="canvas"></canvas>
+	<div id="app">
+    <v-app style="background-color: #565656;">
+      <v-main class="d-flex align-center">
+				<canvas ref="canvas" id="canvas" class="d-none"></canvas>
+
+				<v-container ref="charSelection">
+					<v-card style="background-color: #333;">
+						<v-card-title style="color: #FFF;">Escolha seu personagem: {{currentChar}}</v-card-title>
+						<v-container>
+							<v-row>
+								<v-col v-for="(character, index) in characters" :key="index" cols="6">
+									<v-card>
+										<v-card-text class="text-center d-flex flex-column">
+											<span style="color: #000; font-size: 20px;">{{character.name}}</span>
+
+											<div class="py-2">
+												<v-card-text class="py-0">Vida: {{character.health}}</v-card-text>
+												<v-card-text class="py-0">Força: {{character.power}}</v-card-text>
+												<v-card-text class="py-0">Velocidade: {{character.speed}}</v-card-text>
+											</div>
+
+											<v-btn small rounded color="green" @click="chooseChar(character)">Selecionar</v-btn>
+										</v-card-text>
+									</v-card>
+								</v-col>
+							</v-row>
+						</v-container>
+
+						<v-card-actions class="d-flex justify-center">
+							<v-btn large :loading="loading" @click="showCanva">Jogar</v-btn>
+						</v-card-actions>
+					</v-card>
+				</v-container>
+
+      </v-main>
+    </v-app>
+	</div>
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="game.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+	<script>
+		var app = new Vue({
+			el: '#app',
+			vuetify: new Vuetify(),
+			data() {
+				return {
+					loading: true,
+					interval: null,
+					currentChar: null,
+					characters: [
+						{
+							name: 'Warrior',
+							entity: 'EntityMeteor',
+							power: 1,
+							speed: 5,
+							health: 2
+						},
+						{
+							name: 'Samurai',
+							entity: 'EntitySamurai',
+							power: 1,
+							speed: 5,
+							health: 2
+						},
+						{
+							name: 'Wizard',
+							entity: 'EntityWizard',
+							power: 1,
+							speed: 5,
+							health: 2
+						},
+					]
+				}
+			},
+			methods: {
+				showCanva() {
+					socket.emit('gameLoaded', currentSocketId, currentChar);
+					app.$refs.canvas.classList.remove('d-none');
+					app.$refs.charSelection.classList.add('d-none');
+				},
+				chooseChar(char) {
+					this.currentChar = char.name
+					currentChar = char.entity;
+				},
+				watchGameLoading() {
+					this.interval = setInterval(() => {
+						if(ig.game !== null) {
+							this.loading = false;
+							clearInterval(this.interval);
+						}
+					}, 1000)
+				}
+			},
+			created() {
+				this.watchGameLoading();
+			}
+		});
+	</script>
 </body>
 </html>
