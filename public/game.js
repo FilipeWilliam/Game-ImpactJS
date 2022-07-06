@@ -72,7 +72,7 @@ socket.on('atualizeTimer', (timer) => {
 });
 
 socket.on('renderSpell', (attackProperties, positionY, flipX, attackSettings, spellId) => {
-  ig.game.spawnEntity('EntitySpell', attackProperties.positionX, positionY, {spellId, ...attackSettings});
+  ig.game.spawnEntity('EntityArrow', attackProperties.positionX, positionY, {spellId, ...attackSettings});
 
   let spell = ig.game.entities.find(spell => spell.spellId === spellId);
   spell.vel.x = attackProperties.attackVel;

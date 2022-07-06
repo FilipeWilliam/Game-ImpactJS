@@ -8,6 +8,8 @@ ig.module(
 		'game.levels.florest',
 		'game.levels.industrial',
 		'game.entities.spell',
+		'game.entities.fireball',
+		'game.entities.arrow',
 		'game.entities.meteor',
 		'game.entities.wizard',
 		'game.entities.samurai',

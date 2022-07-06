@@ -34,71 +34,136 @@
       <v-main class="d-flex align-center">
 				<canvas ref="canvas" id="canvas" class="d-none"></canvas>
 
-				<v-container ref="charSelection">
-					<v-card style="background-color: #333;">
-
-						<template v-if="isStageSelect">
-							<v-card-title style="color: #FFF;">Escolha o cenário: {{currentStage.name}}</v-card-title>
+				<template v-if="route === 'login'">
+					<v-container>
+						<v-card style="width: 600px; margin: 0 auto;">
 							<v-container>
-								<v-row>
-									<v-col v-for="(stage, index) in stages" :key="index" cols="6">
-										<v-card>
-											<v-card-text class="text-center d-flex flex-column">
-												<span class="py-2" style="color: #000; font-size: 20px;">{{stage.name}}</span>
+								<v-card-title>Efetue o login</v-card-title>
+		
+								<v-form>
+									<v-text-field v-model="user.name" label="Usuário" outlined></v-text-field>
+									<v-text-field v-model="user.password" label="Senha" type="password" outlined></v-text-field>
+								</v-form>
 
-												<v-btn class="mt-2" small rounded color="green" @click="chooseStage(stage)">Selecionar</v-btn>
-											</v-card-text>
-										</v-card>
-									</v-col>
-								</v-row>
+								<v-layout justify-center>
+									<v-btn color="green" @click="route = 'menu'">Entrar</v-btn>
+								</v-layout>
 							</v-container>
+						</v-card>
+					</v-container>
+				</template>
 
-							<v-card-actions class="d-flex justify-center">
-								<v-btn large :loading="loading" :disabled="!currentStage.name" @click="confirmStage">Confirmar</v-btn>
-							</v-card-actions>
+				<template v-if="route === 'menu'">
+					<v-container>
+						<v-card>
+							<v-container>
+								<v-card-title>Olá, {{user.name}}</v-card-title>
+
+								<v-divider></v-divider>
+
+								<div style="height: 450px">
+									<v-layout>
+										<v-list  style="width: 25%">
+											<v-list-item-group v-model="activeSubmenu">
+												<v-list-item v-for="(item, i) in submenu" :key="i">
+													<v-list-item-icon>
+														<v-icon v-text="item.icon"></v-icon>
+													</v-list-item-icon>
+													<v-list-item-content>
+														<v-list-item-title v-text="item.text"></v-list-item-title>
+													</v-list-item-content>
+												</v-list-item>
+											</v-list-item-group>
+										</v-list>								
+	
+										<div   style="width: 75%">
+											<v-card-title>{{activeSubmenuTitle}}</v-card-title>
+
+												<template v-if="activeSubmenu === 1">
+													<v-card>
+														<v-data-table :headers="headers" :items="rankingPlayers"></v-data-table>
+													</v-card>
+												</template>
+										</div>
+									</v-layout>
+								</div>
+		
+								<v-layout justify-center>
+									<v-btn style="color: #FFF;" color="blue" @click="route = 'game'">Jogar</v-btn>
+								</v-layout>
+							</v-container>
+						</v-card>
+					</v-container>
+				</template>
+
+				<template v-if="route === 'game'">
+					<v-container ref="charSelection">
+						<v-card style="background-color: #333;">
+	
+							<template v-if="isStageSelect">
+								<v-card-title style="color: #FFF;">Escolha o cenário: {{currentStage.name}}</v-card-title>
+								<v-container>
+									<v-row>
+										<v-col v-for="(stage, index) in stages" :key="index" cols="6">
+											<v-card>
+												<v-card-text class="text-center d-flex flex-column">
+													<span class="py-2" style="color: #000; font-size: 20px;">{{stage.name}}</span>
+	
+													<v-btn class="mt-2" small rounded color="green" @click="chooseStage(stage)">Selecionar</v-btn>
+												</v-card-text>
+											</v-card>
+										</v-col>
+									</v-row>
+								</v-container>
+	
+								<v-card-actions class="d-flex justify-center">
+									<v-btn large :loading="loading" :disabled="!currentStage.name" @click="confirmStage">Confirmar</v-btn>
+								</v-card-actions>
+							</template>
+	
+							<template v-if="isCharSelect">
+								<v-card-title style="color: #FFF;">Escolha seu personagem: {{currentChar}}</v-card-title>
+								<v-container>
+									<v-row>
+										<v-col v-for="(character, index) in characters" :key="index" cols="6">
+											<v-card>
+												<v-card-text class="text-center d-flex flex-column">
+													<span style="color: #000; font-size: 20px;">{{character.name}}</span>
+	
+													<div class="py-2">
+														<v-card-text class="py-0">Vida: {{character.health}}</v-card-text>
+														<v-card-text class="py-0">Força: {{character.power}}</v-card-text>
+														<v-card-text class="py-0">Velocidade: {{character.speed}}</v-card-text>
+													</div>
+	
+													<v-btn small rounded color="green" @click="chooseChar(character)">Selecionar</v-btn>
+												</v-card-text>
+											</v-card>
+										</v-col>
+									</v-row>
+								</v-container>
+	
+								<v-card-actions class="d-flex justify-center">
+									<v-btn large :disabled="!currentChar" @click="showCanvas">Jogar</v-btn>
+								</v-card-actions>
 						</template>
-
-						<template v-if="isCharSelect">
-							<v-card-title style="color: #FFF;">Escolha seu personagem: {{currentChar}}</v-card-title>
-							<v-container>
-								<v-row>
-									<v-col v-for="(character, index) in characters" :key="index" cols="6">
-										<v-card>
-											<v-card-text class="text-center d-flex flex-column">
-												<span style="color: #000; font-size: 20px;">{{character.name}}</span>
-
-												<div class="py-2">
-													<v-card-text class="py-0">Vida: {{character.health}}</v-card-text>
-													<v-card-text class="py-0">Força: {{character.power}}</v-card-text>
-													<v-card-text class="py-0">Velocidade: {{character.speed}}</v-card-text>
-												</div>
-
-												<v-btn small rounded color="green" @click="chooseChar(character)">Selecionar</v-btn>
-											</v-card-text>
-										</v-card>
-									</v-col>
-								</v-row>
-							</v-container>
-
-							<v-card-actions class="d-flex justify-center">
-								<v-btn large :disabled="!currentChar" @click="showCanvas">Jogar</v-btn>
-							</v-card-actions>
-					</template>
-
-					</v-card>
-				</v-container>
+	
+						</v-card>
+					</v-container>
+	
+				</template>
 
 				<v-dialog v-model="dialog" width="600">
 					<v-card>
 
 						<template v-if="isWinner">
 							<v-card-title>Você ganhou!</v-card-title>
-							<v-card-text>Você perdeu de {{matchPoints.myPoints}} x {{matchPoints.enemyPoints}}</v-card-text>
+							<v-card-text>Você ganhou de {{matchPoints.myPoints}} x {{matchPoints.enemyPoints}}</v-card-text>
 						</template>
 
 						<template v-else>
 							<v-card-title>Você perdeu!</v-card-title>
-							<v-card-text>Você ganhou de {{matchPoints.myPoints}} x {{matchPoints.enemyPoints}}</v-card-text>
+							<v-card-text>Você perdeu de {{matchPoints.myPoints}} x {{matchPoints.enemyPoints}}</v-card-text>
 						</template>
 
 						<v-btn @click="dialog = false">Continuar</v-btn>
@@ -122,6 +187,63 @@
 					loading: true,
 					dialog: false,
 					interval: null,
+					user: {
+						name: '',
+						password: '',
+					},
+					submenu: [
+					{
+							id: 0,
+							text: 'Início'
+					}	,
+					{
+							id: 1,
+							text: 'Placar'
+						}
+					],
+					headers: [
+						{
+							text: 'ID',
+							value: 'id'
+						},
+						{
+							text: 'Nome',
+							value: 'name'
+						},
+						{
+							text: 'Pontos',
+							value: 'points'
+						},
+					],
+					rankingPlayers: [
+						{
+							id: 1,
+							name: 'Filipe rei do jogo',
+							points: '∞'
+						},
+						{
+							id: 2,
+							name: 'Joãoinho perdedor',
+							points: '10'
+						},
+						{
+							id: 3,
+							name: 'Noob',
+							points: '5'
+						},
+						{
+							id: 4,
+							name: 'WordPress user',
+							points: '-1000'
+						},
+						{
+							id: 5,
+							name: 'WordPress user',
+							points: '-1000'
+						},
+					],
+					activeSubmenu: 0, 
+					route: 'login',
 					currentChar: null,
 					currentStage: {},
 					isCharSelect: false,
@@ -157,7 +279,7 @@
 							health: 2
 						},
 						{
-							name: 'Wizard',
+							name: 'Leck',
 							entity: 'EntityWizard',
 							power: 1,
 							speed: 5,
@@ -210,6 +332,11 @@
 							clearInterval(this.interval);
 						}
 					}, 1000)
+				}
+			},
+			computed: {
+				activeSubmenuTitle() {
+					return this.submenu.find(menu => menu.id === this.activeSubmenu).text;
 				}
 			},
 			created() {

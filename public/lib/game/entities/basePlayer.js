@@ -4,8 +4,9 @@ ig.module(
   .requires(
     'impact.entity',
     'impact.game',
-    'game.entities.spell'
-  )
+    'game.entities.spell',
+    'game.entities.fireball'
+    )
   .defines(function () {
     BasePlayer = ig.Entity.extend({
       type: this.type,

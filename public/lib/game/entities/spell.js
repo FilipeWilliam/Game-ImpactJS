@@ -3,8 +3,9 @@ ig.module(
     )
     .requires(
         'impact.entity',
-        'impact.entity-pool'
-    )
+        'impact.game',
+        'impact.entity-pool',
+        )
     .defines(function () {
         EntitySpell = ig.Entity.extend({
             spellId: null,
@@ -13,6 +14,7 @@ ig.module(
             collides: ig.Entity.COLLIDES.LITE,
             serverComunicationInterval: 10,
             gravityFactor: 0,
+            animationSpell: this.animationSpell,
             flip: true,
             maxVel: {
                 x: 1000,
@@ -27,8 +29,6 @@ ig.module(
                 y: 5
             },
 
-            animSheet: new ig.AnimationSheet('media/champions/wizard/fireball/fireball-sheet.png', 64, 32),
-
             handleMovementTrace: function (res) {
                 this.pos.x += this.vel.x * ig.system.tick;
                 this.pos.y += this.vel.y * ig.system.tick;
@@ -40,7 +40,7 @@ ig.module(
             },
 
             init: function (x, y, settings) {
-                this.anims.idle = new ig.Animation(this.animSheet, 0.1, [0, 2, 1, 4, 3]);
+                this.anims.idle = new ig.Animation(this.animationSpell, 0.1, [0, 2, 1, 4, 3]);
                 this.parent(x, y, settings);
             },
 
