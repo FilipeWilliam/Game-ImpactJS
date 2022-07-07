@@ -42,7 +42,7 @@
 		
 								<v-form>
 									<v-text-field v-model="user.login" label="Usuário" outlined></v-text-field>
-									<v-text-field v-model="user.password" label="Senha" type="password" outlined></v-text-field>
+									<v-text-field v-model="user.senha" label="Senha" type="password" outlined></v-text-field>
 								</v-form>
 
 								<v-layout justify-center>
@@ -57,7 +57,10 @@
 					<v-container>
 						<v-card>
 							<v-container>
-								<v-card-title>Olá, {{user.name}}</v-card-title>
+								<v-card-title>Olá, {{(currentUserInfo.nome) ? currentUserInfo.nome : ''}} 
+									<v-spacer></v-spacer>
+									<v-btn style="color: #FFF;" color="red" @click="logout">Sair</v-btn>
+								</v-card-title>
 
 								<v-divider></v-divider>
 
@@ -81,7 +84,7 @@
 
 												<template v-if="activeSubmenu === 1">
 													<v-card>
-														<v-data-table :headers="headers" :items="rankingPlayers"></v-data-table>
+														<v-data-table :headers="headers" :items="rankingPlayers" :loading="tableLoading" hide-default-footer></v-data-table>
 													</v-card>
 												</template>
 										</div>
@@ -192,7 +195,7 @@
 					interval: null,
 					user: {
 						login: '',
-						password: '',
+						senha: '',
 					},
 					snackbar: {
 						model: false,
@@ -211,46 +214,27 @@
 					headers: [
 						{
 							text: 'ID',
-							value: 'id'
+							value: 'ID'
 						},
 						{
 							text: 'Nome',
-							value: 'name'
+							value: 'NOME'
 						},
 						{
 							text: 'Pontos',
-							value: 'points'
+							value: 'PONTOS'
 						},
 					],
 					rankingPlayers: [
-						{
-							id: 1,
-							name: 'Filipe rei do jogo',
-							points: '∞'
-						},
-						{
-							id: 2,
-							name: 'Joãoinho perdedor',
-							points: '10'
-						},
-						{
-							id: 3,
-							name: 'Noob',
-							points: '5'
-						},
-						{
-							id: 4,
-							name: 'WordPress user',
-							points: '-1000'
-						},
-						{
-							id: 5,
-							name: 'WordPress user',
-							points: '-1000'
-						},
+						// {
+						// 	id: 1,
+						// 	name: 'Filipe rei do jogo',
+						// 	points: '∞'
+						// },
 					],
 					currentUserInfo: {},
 					activeSubmenu: 0, 
+					tableLoading: false,
 					route: 'login',
 					currentChar: null,
 					currentStage: {},
@@ -299,12 +283,13 @@
 			methods: {
 				submitLogin() {
 					this.loading = true;
+					console.log(this.user);
 					axios.post('http://localhost:4000/auth', this.user)
 						.then(response => {
 							this.loading = false;
-							this.setUserInfo();
 							localStorage.setItem('userToken', response.data.token);
 							localStorage.setItem('appUser', JSON.stringify(response.data.user));
+							this.setUserInfo();
 							this.route = 'menu'
 						})
 						.catch((error) => {
@@ -312,9 +297,19 @@
 							this.showSnackbar(error.response.data.error);
 						})
 				},
+				listRanking() {
+					this.tableLoading = true;
+					axios.get('http://localhost:4000/ranking')
+						.then(response => {
+							this.rankingPlayers = [...response.data.entities];
+							this.tableLoading = false;
+						})
+						.catch((error) => this.showSnackbar(error.response.data.error));
+				},
 				setUserInfo() {
-					let info = localStorage.getItem(response.data.user)
+					let info = localStorage.getItem('appUser');
 					this.currentUserInfo = JSON.parse(info);
+					console.log(this.currentUserInfo)
 				},
 				showSnackbar(text) {
 					this.snackbar.model = true;
@@ -352,6 +347,10 @@
 					this.closeCanvas();
 					this.dialog = true;
 				},
+				logout() {
+					this.route = 'login';
+					localStorage.clear();
+				},
 				closeCanvas() {
 					app.$refs.canvas.classList.add('d-none');
 					app.$refs.charSelection.classList.remove('d-none');
@@ -363,6 +362,13 @@
 							clearInterval(this.interval);
 						}
 					}, 1000)
+				}
+			},
+			watch: {
+				activeSubmenu(newValue) {
+					if(newValue === 1) {
+						this.listRanking();
+					}
 				}
 			},
 			computed: {
