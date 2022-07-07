@@ -343,9 +343,11 @@
 						enemyPoints
 					}
 
-					this.closeCanvas();
-					this.dialog = true;
-					this.changePoints();
+					if(!this.dialog) {
+						this.closeCanvas();
+						this.dialog = true;
+						this.changePoints();
+					}
 				},
 				changePoints() {
 					axios.post('http://localhost:4000/finish', {...this.matchPoints, id: this.currentUserInfo.id})
