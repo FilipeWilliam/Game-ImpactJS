@@ -215,7 +215,7 @@ ig.module(
         let currentFlip = this.currentAnim.flip.x;
 
         setTimeout(() => {
-          socket.emit('createAttack',  attackProperties, this.pos.y + 20, currentFlip, attackSettings);
+          socket.emit('createAttack',  attackProperties, this.pos.y + 20, currentFlip, attackSettings, this.spellEntity);
 
           setTimeout(() => {
             this.isAttacking = false;

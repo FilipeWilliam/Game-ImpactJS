@@ -15,6 +15,7 @@ ig.module(
             accelAir: 310,
             jump: 250,
             health: 2,
+            spellEntity: 'EntityFireball',
             cooldownAttackTimeout: 1000,
             offset: {
                 x: 70,

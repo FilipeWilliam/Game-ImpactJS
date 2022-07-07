@@ -11,6 +11,7 @@ ig.module(
       type: ig.Entity.TYPE.B,
       checkAgainst: ig.Entity.TYPE.A,
       collides: ig.Entity.COLLIDES.ACTIVE,
+      spellEntity: 'EntityArrow',
       accelGround: 200,
       accelAir: 310,
       jump: 250,

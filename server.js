@@ -54,8 +54,8 @@ io.on("connection", (socket) => {
     }, 3000);
   });
 
-  socket.on('createAttack', (attackProperties, positionY, flipX, attackSettings) => {
-    io.sockets.emit('renderSpell', attackProperties, positionY, flipX, attackSettings, indexOfSpell);
+  socket.on('createAttack', (attackProperties, positionY, flipX, attackSettings, spellEntity) => {
+    io.sockets.emit('renderSpell', attackProperties, positionY, flipX, attackSettings, indexOfSpell, spellEntity);
     indexOfSpell++;
   })
 

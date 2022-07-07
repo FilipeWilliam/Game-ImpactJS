@@ -71,8 +71,8 @@ socket.on('atualizeTimer', (timer) => {
   }
 });
 
-socket.on('renderSpell', (attackProperties, positionY, flipX, attackSettings, spellId) => {
-  ig.game.spawnEntity('EntityFireball', attackProperties.positionX, positionY, {spellId, ...attackSettings});
+socket.on('renderSpell', (attackProperties, positionY, flipX, attackSettings, spellId, spellEntity) => {
+  ig.game.spawnEntity(spellEntity, attackProperties.positionX, positionY, {spellId, ...attackSettings});
 
   let spell = ig.game.entities.find(spell => spell.spellId === spellId);
   spell.vel.x = attackProperties.attackVel;
