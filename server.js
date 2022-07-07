@@ -1,11 +1,14 @@
 import express from 'express';
 import http from 'http';
 import {Server} from 'socket.io';
+import router from './routes.js'
+import cors from 'cors';
 
 const app = express();
 const serverHttp = http.createServer(app);
 
 const io = new Server(serverHttp, {
+  transports: ['polling'],
   cors: {
     origin: "*"
   }
@@ -67,6 +70,10 @@ io.on("connection", (socket) => {
     finishTimer();
   });
 });
+
+app.use(express.json());
+app.use(cors());
+app.use(router);
 
 serverHttp.listen(4000, () => {
   console.log("Tá rodando");
