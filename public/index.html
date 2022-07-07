@@ -309,7 +309,6 @@
 				setUserInfo() {
 					let info = localStorage.getItem('appUser');
 					this.currentUserInfo = JSON.parse(info);
-					console.log(this.currentUserInfo)
 				},
 				showSnackbar(text) {
 					this.snackbar.model = true;
@@ -346,6 +345,14 @@
 
 					this.closeCanvas();
 					this.dialog = true;
+					this.changePoints();
+				},
+				changePoints() {
+					axios.post('http://localhost:4000/finish', {...this.matchPoints, id: this.currentUserInfo.id})
+						.then(response => {
+							this.showSnackbar(response.data.message);
+						}).catch((error) => this.showSnackbar(error.response.data.error));
+
 				},
 				logout() {
 					this.route = 'login';
