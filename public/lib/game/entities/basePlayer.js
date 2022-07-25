@@ -204,7 +204,6 @@ ig.module(
               this.currentAnim.flip.x =  this.enemyFlip;
               break;
           }
-
           this.parent();
         }
       },
